@@ -1,4 +1,4 @@
-export type BaseTrip = {
-  id: string;
-  name: string;
+export type ErrorResponse = {
+  error: string;
+  code?: number;
 };

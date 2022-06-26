@@ -16,6 +16,27 @@ enum TripUserRole {
   VIEWER
 }
 
+enum TripUserType {
+  COMMON
+  INVITE
+}
+
+enum TripTransportType {
+  BUS
+  PLANE
+}
+
+enum TripAccomodationProvider {
+  BOOKING
+}
+
+enum TripTransportProvider {
+  WIZZAIR
+  RYANAIR
+  LOCAL_TRAIN
+  LOCAL_BUS
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -44,14 +65,14 @@ model Session {
 }
 
 model User {
-  id                 String               @id @default(cuid())
-  name               String?
-  email              String?              @unique
-  emailVerified      DateTime?
-  image              String?
-  accounts           Account[]
-  sessions           Session[]
-  TripAttachedPeople TripAttachedPeople[]
+  id            String     @id @default(cuid())
+  name          String?
+  email         String?    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  TripUser      TripUser[]
 }
 
 model VerificationToken {
@@ -69,27 +90,53 @@ model Trip {
   date_end   DateTime
   location   String
 
-  TripAttachedPeople TripAttachedPeople[]
-  TripAccomodation   TripAccomodation[]
+
+  locale   String
+  currency String
+
+  users        TripUser[]
+  accomodation TripAccomodation[]
+  transport    TripTransport[]
 }
 
 model TripAccomodation {
-  id          String   @id @default(cuid())
-  name        String
-  bookingLink String
-  date        DateTime
+  id               String                   @id @default(cuid())
+  name             String
+  provider         TripAccomodationProvider
+  confirmationLink String
 
-  tripId String
-  Trip   Trip   @relation(fields: [tripId], references: [id])
-}
+  dateStart DateTime
+  dateEnd   DateTime
 
-model TripAttachedPeople {
-  id   String       @id @default(cuid())
-  role TripUserRole
-
-  tripId String
-  userId String
+  coverPhoto      String
+  propertyAddress String
+  propertyLink    String
+  propertyPhone   String
+  price           Int
+  tripId          String
 
   trip Trip @relation(fields: [tripId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+}
+
+model TripTransport {
+  id                String                @id @default(cuid())
+  tripId            String
+  type              TripTransportType
+  provider          TripTransportProvider
+  reservationNumber String
+  price             String
+
+  trip Trip @relation(fields: [tripId], references: [id])
+}
+
+model TripUser {
+  id       String       @id @default(cuid())
+  role     TripUserRole
+  userType TripUserType
+  tripId   String
+  userId   String?
+  email    String?
+
+  trip Trip  @relation(fields: [tripId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 }

@@ -2,19 +2,16 @@ import { Trip } from "@prisma/client";
 import { Fragment } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
-import { SearchIcon } from "@heroicons/react/solid";
 
-import type {
-  GetServerSidePropsContext,
-  NextPage,
-  NextPageContext,
-} from "next";
-import { useSession } from "next-auth/react";
+import type { GetServerSidePropsContext, NextPage } from "next";
 import { getTrip } from "../../services/prisma";
-
-type TripProps = {
-  trip: Trip;
-};
+import { getSessionProps } from "../../utils/access";
+import { Restricted } from "../../components/Restricted";
+import { UserList } from "../../components/UserList";
+import { Footer } from "../../components/Footer";
+import { useMutation } from "react-query";
+import axios from "axios";
+import { AccomodationList } from "../../components/AccomodationList";
 
 const user = {
   name: "Tom Cook",
@@ -39,13 +36,26 @@ function classNames(...classes: string[]) {
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const id = (context?.params?.id || "").toString();
-  const trip = await getTrip(id);
-  return { props: { trip } };
+  const tripId = (context?.query?.id || "").toString();
+  const sessionProps = await getSessionProps(context, tripId);
+
+  const trip = await getTrip(tripId);
+  return { props: { trip, ...sessionProps } };
 }
 
-export const TripPage: NextPage<TripProps> = ({ trip }) => {
-  const { data: session } = useSession();
+type TripPageProps = Awaited<ReturnType<typeof getServerSideProps>>["props"];
+
+export const TripPage: NextPage<TripPageProps> = ({
+  trip,
+  isAccess,
+  isInvited,
+}) => {
+  if ((!isAccess && !isInvited) || !trip) {
+    return <Restricted />;
+  }
+
+  const locale = trip.locale || "pl-PL";
+  const currency = trip.currency || "PLN";
 
   return (
     <>
@@ -59,7 +69,9 @@ export const TripPage: NextPage<TripProps> = ({ trip }) => {
                   <div className="absolute left-0 flex-shrink-0 lg:static">
                     <a href="#">
                       <span className="sr-only">Workflow</span>
-                      <span className="w-auto font-medium text-indigo-200 text-2xl">Tripplan</span>
+                      <span className="w-auto font-medium text-indigo-200 text-2xl">
+                        Trip<span className="text-indigo-300">Plan</span>
+                      </span>
                     </a>
                   </div>
 
@@ -78,11 +90,6 @@ export const TripPage: NextPage<TripProps> = ({ trip }) => {
                       <div>
                         <Menu.Button className="bg-white rounded-full flex text-sm ring-2 ring-white ring-opacity-20 focus:outline-none focus:ring-opacity-100">
                           <span className="sr-only">Open user menu</span>
-                          <img
-                            className="h-8 w-8 rounded-full"
-                            src={user.imageUrl}
-                            alt=""
-                          />
                         </Menu.Button>
                       </div>
                       <Transition
@@ -110,27 +117,6 @@ export const TripPage: NextPage<TripProps> = ({ trip }) => {
                         </Menu.Items>
                       </Transition>
                     </Menu>
-                  </div>
-
-                  {/* Search */}
-                  <div className="flex-1 min-w-0 px-12 lg:hidden">
-                    <div className="max-w-xs w-full mx-auto">
-                      <label htmlFor="desktop-search" className="sr-only">
-                        Search
-                      </label>
-                      <div className="relative text-white focus-within:text-gray-600">
-                        <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-                          <SearchIcon className="h-5 w-5" aria-hidden="true" />
-                        </div>
-                        <input
-                          id="desktop-search"
-                          className="block w-full bg-white bg-opacity-20 py-2 pl-10 pr-3 border border-transparent rounded-md leading-5 text-gray-900 placeholder-white focus:outline-none focus:bg-opacity-100 focus:border-transparent focus:placeholder-gray-500 focus:ring-0 sm:text-sm"
-                          placeholder="Search"
-                          type="search"
-                          name="search"
-                        />
-                      </div>
-                    </div>
                   </div>
 
                   {/* Menu button */}
@@ -168,28 +154,6 @@ export const TripPage: NextPage<TripProps> = ({ trip }) => {
                         ))}
                       </nav>
                     </div>
-                    <div>
-                      <div className="max-w-md w-full mx-auto">
-                        <label htmlFor="mobile-search" className="sr-only">
-                          Search
-                        </label>
-                        <div className="relative text-white focus-within:text-gray-600">
-                          <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-                            <SearchIcon
-                              className="h-5 w-5"
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <input
-                            id="mobile-search"
-                            className="block w-full bg-white bg-opacity-20 py-2 pl-10 pr-3 border border-transparent rounded-md leading-5 text-gray-900 placeholder-white focus:outline-none focus:bg-opacity-100 focus:border-transparent focus:placeholder-gray-500 focus:ring-0 sm:text-sm"
-                            placeholder="Search"
-                            type="search"
-                            name="search"
-                          />
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -224,13 +188,7 @@ export const TripPage: NextPage<TripProps> = ({ trip }) => {
                       <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white divide-y divide-gray-200">
                         <div className="pt-3 pb-2">
                           <div className="flex items-center justify-between px-4">
-                            <div>
-                              <img
-                                className="h-8 w-auto"
-                                src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                                alt="Workflow"
-                              />
-                            </div>
+                            <div></div>
                             <div className="-mr-2">
                               <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                                 <span className="sr-only">Close menu</span>
@@ -327,7 +285,14 @@ export const TripPage: NextPage<TripProps> = ({ trip }) => {
                     Section title
                   </h2>
                   <div className="rounded-lg bg-white overflow-hidden shadow">
-                    <div className="p-6">{/* Your content */}</div>
+                    <div className="px-6 py-3 pb-6">
+                      <AccomodationList
+                        tripId={trip.id}
+                        accomodations={trip.accomodation}
+                        currency={currency}
+                        locale={locale}
+                      />
+                    </div>
                   </div>
                 </section>
               </div>
@@ -339,23 +304,16 @@ export const TripPage: NextPage<TripProps> = ({ trip }) => {
                     Section title
                   </h2>
                   <div className="rounded-lg bg-white overflow-hidden shadow">
-                    <div className="p-6">{/* Your content */}</div>
+                    <div className="px-6 py-3">
+                      <UserList users={trip?.users} />
+                    </div>
                   </div>
                 </section>
               </div>
             </div>
           </div>
         </main>
-        <footer>
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
-            <div className="border-t border-gray-200 py-8 text-sm text-gray-500 text-center sm:text-left">
-              <span className="block sm:inline">
-                &copy; 2021 Tailwind Labs Inc.
-              </span>{" "}
-              <span className="block sm:inline">All rights reserved.</span>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
