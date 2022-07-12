@@ -1,6 +1,6 @@
 import { TripUser, TripUserType, User } from "@prisma/client";
 type UserListProps = {
-  users?: Array<TripUser & { user?: User }>;
+  users?: (TripUser & { user: User })[];
 };
 
 export const UserList = ({ users = [] }: UserListProps) => {

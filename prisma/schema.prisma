@@ -10,6 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TripPollType {
+  MULTISELECT
+  SINGLESELECT
+}
+
 enum TripUserRole {
   CREATOR
   USER
@@ -26,7 +31,7 @@ enum TripTransportType {
   PLANE
 }
 
-enum TripAccomodationProvider {
+enum TripAccommodationProvider {
   BOOKING
 }
 
@@ -84,26 +89,35 @@ model VerificationToken {
 }
 
 model Trip {
-  id         String   @id @default(cuid())
-  name       String
-  date_start DateTime
-  date_end   DateTime
-  location   String
+  id        String   @id @default(uuid())
+  name      String
+  dateStart DateTime
+  dateEnd   DateTime
+  location  String
 
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
   locale   String
   currency String
 
-  users        TripUser[]
-  accomodation TripAccomodation[]
-  transport    TripTransport[]
+  users         TripUser[]
+  accommodation TripAccommodation[]
+  transport     TripTransport[]
+  poll          TripPoll[]
+  see           TripSee[]
+  hike          TripHike[]
+  TripMap       TripMap[]
 }
 
-model TripAccomodation {
-  id               String                   @id @default(cuid())
+model TripAccommodation {
+  id               String                    @id @default(uuid())
   name             String
-  provider         TripAccomodationProvider
+  provider         TripAccommodationProvider
   confirmationLink String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
   dateStart DateTime
   dateEnd   DateTime
@@ -112,25 +126,35 @@ model TripAccomodation {
   propertyAddress String
   propertyLink    String
   propertyPhone   String
-  price           Int
+  price           Float
   tripId          String
 
   trip Trip @relation(fields: [tripId], references: [id])
 }
 
 model TripTransport {
-  id                String                @id @default(cuid())
-  tripId            String
-  type              TripTransportType
-  provider          TripTransportProvider
-  reservationNumber String
-  price             String
+  id       String                @id @default(uuid())
+  tripId   String
+  type     TripTransportType
+  provider TripTransportProvider
 
-  trip Trip @relation(fields: [tripId], references: [id])
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  price        Float
+  uniqueNumber String
+  origin       String
+  destination  String
+  dateStart    DateTime
+  dateEnd      DateTime
+  comment      String?
+
+  trip       Trip         @relation(fields: [tripId], references: [id])
+  TripTicket TripTicket[]
 }
 
 model TripUser {
-  id       String       @id @default(cuid())
+  id       String       @id @default(uuid())
   role     TripUserRole
   userType TripUserType
   tripId   String
@@ -139,4 +163,112 @@ model TripUser {
 
   trip Trip  @relation(fields: [tripId], references: [id])
   user User? @relation(fields: [userId], references: [id])
+
+  TripVote   TripVote[]
+  TripTicket TripTicket[]
+}
+
+model TripPoll {
+  id     String @id @default(uuid())
+  tripId String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  name        String
+  dateStart   DateTime
+  dateEnd     DateTime
+  type        TripPollType
+  description String
+
+  trip   Trip             @relation(fields: [tripId], references: [id])
+  answer TripPollAnswer[]
+}
+
+model TripPollAnswer {
+  id         String @id @default(uuid())
+  tripPollId String
+
+  name String
+
+  poll TripPoll   @relation(fields: [tripPollId], references: [id])
+  vote TripVote[]
+}
+
+model TripVote {
+  id           String @id @default(uuid())
+  tripAnswerId String
+  tripUserId   String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  answer TripPollAnswer @relation(fields: [tripAnswerId], references: [id])
+  user   TripUser       @relation(fields: [tripUserId], references: [id])
+
+}
+
+model TripSee {
+  id             String  @id @default(uuid())
+  tripId         String
+  tripLocationId String?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  name  String
+  image String
+  price Float
+
+  trip     Trip          @relation(fields: [tripId], references: [id])
+  location TripLocation? @relation(fields: [tripLocationId], references: [id])
+}
+
+model TripHike {
+  id     String @id @default(uuid())
+  tripId String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  name      String
+  gpxFile   String
+  length    Float
+  dateStart DateTime
+
+  trip Trip @relation(fields: [tripId], references: [id])
+}
+
+model TripLocation {
+  id String @id @default(uuid())
+
+  latitude  Float
+  longitude Float
+
+  see TripSee[]
+}
+
+model TripTicket {
+  id String @id @default(uuid())
+
+  tripTransportId String
+  tripUserId      String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  image String
+
+  transport TripTransport @relation(fields: [tripTransportId], references: [id])
+  user      TripUser      @relation(fields: [tripUserId], references: [id])
+}
+
+model TripMap {
+  id     String @id @default(uuid())
+  tripId String
+
+  name String
+  url  String
+
+  trip Trip @relation(fields: [tripId], references: [id])
 }

@@ -28,8 +28,9 @@ export const parseBookingSite = (
   try {
     const price = cheerioParse(".mb-price__unit--primary");
     const priceValue = text(price);
-    var re = new RegExp(String.fromCharCode(160), "g");
-    const splitted = priceValue.replace(re, " ").split(" ");
+    const re = new RegExp(String.fromCharCode(160), "g");
+    const splitted = priceValue.replace(re, " ").replace(",", "").split(" ");
+    console.log(splitted);
     splitted.pop();
     if (priceValue) {
       data["price"] = Number(splitted.join(""));
@@ -37,18 +38,25 @@ export const parseBookingSite = (
   } catch (err) {
     console.log(err);
   }
-
   try {
-    const times = cheerioParse("time");
-    const dateStartField = text([times[0].childNodes[0]]);
-    const dateEndField = text([times[1].childNodes[0]]);
-    data.dateStart = parse(dateStartField, "EEEE, d MMMM yyyy", new Date(), {
-      locale: locale as unknown as Locale,
-    }).getTime();
-    data.dateEnd = parse(dateEndField, "EEEE, d MMMM yyyy", new Date(), {
-      locale: locale as unknown as Locale,
-    }).getTime();
-  } catch (err) {}
+    const times = cheerioParse(
+      "div[data-testid='PostBookingCheckinCheckout'] > span"
+    );
+    const formattedTimes = times.toArray().map((element) => text([element]));
+    const dateStart = formattedTimes[0].substring(
+      0,
+      formattedTimes[0].length - 13
+    );
+    const dateEnd = formattedTimes[1].substring(
+      0,
+      formattedTimes[1].length - 13
+    );
+    data.dateStart = Date.parse(dateStart.split(",")[1].trim());
+    data.dateEnd = Date.parse(dateEnd.split(",")[1].trim());
+    console.log(data);
+  } catch (err) {
+    console.log(err);
+  }
 
   try {
     const address = cheerioParse(".mb-hotel-info__address-details");
@@ -75,6 +83,5 @@ export const parseBookingSite = (
   } catch (err) {
     console.log(err);
   }
-
   return data;
 };

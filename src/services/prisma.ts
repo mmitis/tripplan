@@ -1,8 +1,10 @@
+import { PollCreateValues } from "./../components/Polls/components/PollsCreateModal";
 import {
   PrismaClient,
   Trip,
   TripAccomodation,
   TripAccomodationProvider,
+  TripTransport,
   TripUser,
   TripUserRole,
   TripUserType,
@@ -12,23 +14,35 @@ import { ParserBooking } from "../parsers/general";
 
 export const prisma = new PrismaClient();
 
+prisma.$on("beforeExit", async () => {
+  prisma.$disconnect();
+});
+
 prisma.$use(async (params, next) => {
   return next(params);
 });
 
-export const getTrip = async (
-  id: string
-): Promise<
-  | (Trip & {
-      users: (TripUser & { user: User })[];
-      accomodation: TripAccomodation[];
-    })
-  | null
-> => {
+export type TripOverall = Awaited<ReturnType<typeof getTrip>>;
+
+export const getTrip = async (id: string) => {
   try {
     const trip = await prisma.trip.findFirst({
       include: {
-        accomodation: true,
+        accommodation: true,
+        transport: true,
+        poll: {
+          include: {
+            answer: {
+              include: {
+                vote: {
+                  include: {
+                    user: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         users: {
           include: {
             user: true,
@@ -42,7 +56,8 @@ export const getTrip = async (
     if (!trip) {
       return null;
     }
-    return JSON.parse(JSON.stringify(trip));
+    const transformed: typeof trip = JSON.parse(JSON.stringify(trip));
+    return transformed;
   } catch (err) {
     console.log(err);
     return null;
@@ -90,11 +105,11 @@ export const createTripAccomodation = async (
     propertyLink,
     propertyPhone,
   } = bookingData;
-  return prisma.tripAccomodation.create({
+  return prisma.tripAccommodation.create({
     data: {
       tripId,
       confirmationLink,
-      coverPhoto: bookingData.coverPhoto,
+      coverPhoto,
       dateStart: new Date(dateStart),
       dateEnd: new Date(dateEnd),
       name: propertyName,
@@ -105,4 +120,119 @@ export const createTripAccomodation = async (
       provider,
     },
   });
+};
+
+export const createPoll = async (
+  tripId: string,
+  pollData: PollCreateValues
+) => {
+  const { description, name, options, type, validity } = pollData;
+  const poll = await prisma.tripPoll.create({
+    data: {
+      tripId,
+      dateStart: new Date(),
+      dateEnd: new Date(new Date().getTime() + validity * 1000 * 60 * 60),
+      type: type,
+      name,
+      description,
+    },
+  });
+  await prisma.tripPollAnswer.createMany({
+    data: options.map((option) => ({
+      name: option.value,
+      tripPollId: poll.id,
+    })),
+  });
+  return poll;
+};
+
+export const removeTripTransport = async (
+  tripId: string,
+  transportId: string
+) => {
+  try {
+    const transports = await prisma.tripTransport.deleteMany({
+      where: {
+        tripId,
+        id: transportId,
+      },
+    });
+    return transports;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const createTripTransport = async (transportInput: any) => {
+  return prisma.tripTransport.create({
+    data: transportInput,
+  });
+};
+
+export const getTripAccomodations = async (tripId: string) => {
+  try {
+    const places = await prisma.tripAccommodation.findMany({
+      where: {
+        tripId,
+      },
+    });
+    return places;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const removeTripAccomodation = async (
+  tripId: string,
+  placeId: string
+) => {
+  try {
+    const places = await prisma.tripAccommodation.deleteMany({
+      where: {
+        tripId,
+        id: placeId,
+      },
+    });
+    return places;
+  } catch (err) {
+    return null;
+  }
+};
+export type TripPollOverall = Awaited<ReturnType<typeof getTripPolls>>[number];
+
+export const getTripPolls = async (tripId: string) => {
+  try {
+    const polls = await prisma.tripPoll.findMany({
+      include: {
+        answer: {
+          include: {
+            vote: true,
+          },
+        },
+      },
+      where: {
+        tripId,
+      },
+    });
+    if (!polls) {
+      return [];
+    }
+    const transformed: typeof polls = JSON.parse(JSON.stringify(polls));
+    return transformed;
+  } catch (err) {
+    return [];
+  }
+};
+
+export const getTripTransports = async (tripId: string) => {
+  try {
+    const transports = await prisma.tripTransport.findMany({
+      where: {
+        tripId,
+      },
+    });
+    return transports;
+  } catch (err) {
+    return null;
+  }
 };

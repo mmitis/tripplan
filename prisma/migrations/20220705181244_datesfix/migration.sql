@@ -1,0 +1,27 @@
+-- AlterTable
+ALTER TABLE "Trip" ALTER COLUMN "createdAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "TripAccomodation" ALTER COLUMN "createdAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "TripHike" ALTER COLUMN "createdAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "TripPoll" ALTER COLUMN "createdAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "TripSee" ALTER COLUMN "createdAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "TripTicket" ALTER COLUMN "createdAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "TripVote" ALTER COLUMN "createdAt" DROP NOT NULL,
+ALTER COLUMN "updatedAt" DROP NOT NULL;
