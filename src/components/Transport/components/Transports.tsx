@@ -77,7 +77,10 @@ export const Transports = ({
               image={StockImages.Transport}
               name={`${transport.origin} - ${transport.destination}`}
               price={transport.price}
-              onClickRemove={(id) => setRemoving(id)}
+              onClickRemove={(id) => {
+                setRemoving(id);
+                removeTransport(id);
+              }}
               isRemoving={removing === transport.id}
             />
           ))}
@@ -92,7 +95,6 @@ export const Transports = ({
           Import flights
         </Button>
       </div>
-      <div className="mt-6"></div>
     </>
   );
 };

@@ -16,7 +16,7 @@ export const usePolls = (tripId: string, ssrPolls: TripPollOverall[]) => {
     [QueryKey.Polls, tripId],
     () => {
       return axios.get<{ polls: TripPollOverall[] }>(
-        `/api/trip/${tripId}/polls`
+        `/api/trip/${tripId}/poll`
       );
     },
     {

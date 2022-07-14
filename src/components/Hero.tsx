@@ -12,9 +12,9 @@ const navigation = [
 
 export const Hero = () => {
   return (
-    <div className="relative bg-gray-800 overflow-hidden h-full">
-      <div className="relative pt-6 pb-16 sm:pb-24">
-        <main className="mt-16 sm:mt-24">
+    <div className="bg-gray-800  h-full">
+      <div className="h-full w-full flex justify-center items-center flex-col">
+        <main className="-mt-10">
           <div className="mx-auto max-w-7xl">
             <div className="lg:grid lg:grid-cols-12 lg:gap-8">
               <div className="px-4 sm:px-6 sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center">
@@ -31,13 +31,16 @@ export const Hero = () => {
                       aria-hidden="true"
                     />
                   </div>
-                  <h1 className="mt-4 text-4xl tracking-tight font-extrabold text-white sm:mt-5 sm:leading-none lg:mt-6 lg:text-5xl xl:text-6xl">
+                  <h1
+                    className="mt-4 text-4xl tracking-tight font-extrabold text-white sm:mt-5 sm:leading-none lg:mt-6 lg:text-5xl xl:text-6xl leading-10"
+                    style={{ lineHeight: "70px" }}
+                  >
                     <span className="md:block">Zorganizuj</span>{" "}
                     <span className="text-lime-400 md:block">
                       swój trip tak jak trzeba.
                     </span>
                   </h1>
-                  <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                  <p className="mt-3 text-sm text-gray-300 sm:mt-5 sm:text-base md:text-lg">
                     Aktualnie <span className="text-lime-200">TripPlan.io</span>{" "}
                     znajduje się w fazie zamkniętych testów i jeśli nie
                     otrzymałeś zaproszenia do jednego z powstałych tripów to nie

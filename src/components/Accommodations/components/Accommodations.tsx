@@ -68,7 +68,10 @@ export const Accommodations = ({
               name={accommodation.name}
               previewLink={accommodation.confirmationLink}
               price={accommodation.price}
-              onClickRemove={(id) => setRemoving(id)}
+              onClickRemove={(id) => {
+                setRemoving(id);
+                removeAccommodation(id);
+              }}
               isRemoving={removing === accommodation.id}
             />
           ))}

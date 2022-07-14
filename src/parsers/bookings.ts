@@ -22,7 +22,7 @@ export const parseBookingSite = (
       data["coverPhoto"] = coverPhotoExec[1];
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 
   try {
@@ -30,13 +30,12 @@ export const parseBookingSite = (
     const priceValue = text(price);
     const re = new RegExp(String.fromCharCode(160), "g");
     const splitted = priceValue.replace(re, " ").replace(",", "").split(" ");
-    console.log(splitted);
     splitted.pop();
     if (priceValue) {
       data["price"] = Number(splitted.join(""));
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
   try {
     const times = cheerioParse(
@@ -53,9 +52,8 @@ export const parseBookingSite = (
     );
     data.dateStart = Date.parse(dateStart.split(",")[1].trim());
     data.dateEnd = Date.parse(dateEnd.split(",")[1].trim());
-    console.log(data);
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 
   try {
@@ -63,7 +61,7 @@ export const parseBookingSite = (
     const addressField = text(address);
     data.propertyAddress = addressField.replaceAll("\n", " ").trim();
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 
   try {
@@ -71,7 +69,7 @@ export const parseBookingSite = (
     const phoneField = text([phone[0]]).replaceAll("\n", " ").trim();
     data.propertyPhone = phoneField;
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 
   try {
@@ -81,7 +79,7 @@ export const parseBookingSite = (
     data.propertyName = propertyNameField;
     data.propertyLink = propertyLinkField || "";
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
   return data;
 };

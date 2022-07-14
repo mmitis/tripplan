@@ -56,7 +56,7 @@ const pollAdd = async (
       poll,
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(404).json({
       error: "Cannot create poll",
     });

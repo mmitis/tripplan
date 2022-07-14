@@ -23,6 +23,7 @@ export type PollCreateValues = {
 type PollOption = {
   id: string;
   value: string;
+  description: string;
 };
 
 export const PollsCreateModal = ({
@@ -167,28 +168,52 @@ export const PollsCreateModal = ({
                                             <span className="text-xs text-gray-500">
                                               {index + 1})
                                             </span>
-                                            <input
-                                              type="text"
-                                              className="ml-2 shadow-sm focus:ring-lime-500 focus:border-lime-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                              placeholder={`Answer ${
-                                                index + 1
-                                              }`}
-                                              onChange={(e) =>
-                                                props.input.onChange(
-                                                  values.options.map(
-                                                    (el, innerIndex) =>
-                                                      index === innerIndex
-                                                        ? {
-                                                            ...el,
-                                                            value:
-                                                              e.currentTarget
-                                                                .value,
-                                                          }
-                                                        : el
+                                            <div className="flex flex-col w-full">
+                                              <input
+                                                type="text"
+                                                className="ml-2 shadow-sm focus:ring-lime-500 focus:border-lime-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                                placeholder={`Answer ${
+                                                  index + 1
+                                                }`}
+                                                onChange={(e) =>
+                                                  props.input.onChange(
+                                                    values.options.map(
+                                                      (el, innerIndex) =>
+                                                        index === innerIndex
+                                                          ? {
+                                                              ...el,
+                                                              value:
+                                                                e.currentTarget
+                                                                  .value,
+                                                            }
+                                                          : el
+                                                    )
                                                   )
-                                                )
-                                              }
-                                            />
+                                                }
+                                              />
+                                              <input
+                                                type="text"
+                                                className="ml-4 mt-1 shadow-sm focus:ring-lime-500 focus:border-lime-500 block sm:text-sm border-gray-300 rounded-md"
+                                                placeholder={`Answer description ${
+                                                  index + 1
+                                                }`}
+                                                onChange={(e) =>
+                                                  props.input.onChange(
+                                                    values.options.map(
+                                                      (el, innerIndex) =>
+                                                        index === innerIndex
+                                                          ? {
+                                                              ...el,
+                                                              description:
+                                                                e.currentTarget
+                                                                  .value,
+                                                            }
+                                                          : el
+                                                    )
+                                                  )
+                                                }
+                                              />
+                                            </div>
                                           </div>
                                         );
                                       })}
@@ -198,7 +223,11 @@ export const PollsCreateModal = ({
                                         onClick={() =>
                                           props.input.onChange([
                                             ...values.options,
-                                            { id: uuid(), value: "" },
+                                            {
+                                              id: uuid(),
+                                              value: "",
+                                              description: "",
+                                            },
                                           ])
                                         }
                                       >

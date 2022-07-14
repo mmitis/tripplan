@@ -17,6 +17,7 @@ import { QueryKey } from "constants/queryKeys";
 import axios from "axios";
 import { Polls } from "components/Polls";
 import { Header } from "components/Header";
+import { Poll } from "components/Polls/components/Poll";
 
 const user = {
   name: "Tom Cook",
@@ -82,6 +83,8 @@ export const TripPage: NextPage<TripPageProps> = ({
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
               <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+                <Poll poll={trip.poll[0]} />
+
                 <Container>
                   <Estimations trip={trip} />
                 </Container>

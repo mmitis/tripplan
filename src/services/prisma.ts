@@ -1,11 +1,7 @@
 import { PollCreateValues } from "./../components/Polls/components/PollsCreateModal";
 import {
   PrismaClient,
-  Trip,
-  TripAccomodation,
-  TripAccomodationProvider,
-  TripTransport,
-  TripUser,
+  TripAccommodationProvider,
   TripUserRole,
   TripUserType,
   User,
@@ -22,6 +18,24 @@ prisma.$use(async (params, next) => {
   return next(params);
 });
 
+const PollItem = (tripId?: string) => ({
+  where: {
+    ...(tripId ? { tripId } : {}),
+    deleted: false,
+  },
+  include: {
+    answer: {
+      include: {
+        vote: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    },
+  },
+});
+
 export type TripOverall = Awaited<ReturnType<typeof getTrip>>;
 
 export const getTrip = async (id: string) => {
@@ -30,19 +44,7 @@ export const getTrip = async (id: string) => {
       include: {
         accommodation: true,
         transport: true,
-        poll: {
-          include: {
-            answer: {
-              include: {
-                vote: {
-                  include: {
-                    user: true,
-                  },
-                },
-              },
-            },
-          },
-        },
+        poll: PollItem(),
         users: {
           include: {
             user: true,
@@ -59,7 +61,7 @@ export const getTrip = async (id: string) => {
     const transformed: typeof trip = JSON.parse(JSON.stringify(trip));
     return transformed;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return null;
   }
 };
@@ -91,7 +93,7 @@ export const createTripInvitation = async (tripId: string, email: string) => {
 
 export const createTripAccomodation = async (
   tripId: string,
-  provider: TripAccomodationProvider,
+  provider: TripAccommodationProvider,
   confirmationLink: string,
   bookingData: ParserBooking
 ) => {
@@ -140,6 +142,7 @@ export const createPoll = async (
   await prisma.tripPollAnswer.createMany({
     data: options.map((option) => ({
       name: option.value,
+      description: option.description,
       tripPollId: poll.id,
     })),
   });
@@ -158,6 +161,23 @@ export const removeTripTransport = async (
       },
     });
     return transports;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const removeTripPoll = async (tripId: string, pollId: string) => {
+  try {
+    const polls = await prisma.tripPoll.updateMany({
+      where: {
+        tripId,
+        id: pollId,
+      },
+      data: {
+        deleted: true,
+      },
+    });
+    return polls;
   } catch (err) {
     return null;
   }
@@ -202,18 +222,7 @@ export type TripPollOverall = Awaited<ReturnType<typeof getTripPolls>>[number];
 
 export const getTripPolls = async (tripId: string) => {
   try {
-    const polls = await prisma.tripPoll.findMany({
-      include: {
-        answer: {
-          include: {
-            vote: true,
-          },
-        },
-      },
-      where: {
-        tripId,
-      },
-    });
+    const polls = await prisma.tripPoll.findMany(PollItem(tripId));
     if (!polls) {
       return [];
     }
@@ -235,4 +244,28 @@ export const getTripTransports = async (tripId: string) => {
   } catch (err) {
     return null;
   }
+};
+
+export const updatePollVotes = async (
+  pollId: string,
+  userId: string,
+  answers: string[]
+) => {
+  await prisma.tripVote.deleteMany({
+    where: {
+      tripUserId: userId,
+      answer: {
+        poll: {
+          id: pollId,
+        },
+      },
+    },
+  });
+  const votes = await prisma.tripVote.createMany({
+    data: answers.map((answer) => ({
+      tripAnswerId: answer,
+      tripUserId: userId,
+    })),
+  });
+  return votes;
 };

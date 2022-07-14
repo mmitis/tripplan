@@ -19,9 +19,11 @@ type PollsProps = {
 
 export const Polls = ({ tripId, polls, locale, currency }: PollsProps) => {
   const [addModal, setAddModal] = useState(false);
+  const [removing, setRemoving] = useState<string | null>(null);
   const {
     polls: pollsList,
     addPoll,
+    removePoll,
     isAdding,
     isLoading,
   } = usePolls(tripId, polls);
@@ -64,14 +66,22 @@ export const Polls = ({ tripId, polls, locale, currency }: PollsProps) => {
                 (acc, el) => acc + el.vote.length,
                 0
               )} / options: ${poll.answer.length}`}
-              onClickRemove={() => {}}
-              isRemoving={false}
+              onClickRemove={(id) => {
+                setRemoving(id);
+                removePoll(id);
+              }}
+              isRemoving={removing == poll.id}
             />
           ))}
         </ul>
       )}
       <div className="mt-4 mb-2">
-        <Button onClick={() => setAddModal(true)}>Create poll</Button>
+        <Button
+          isLoading={isAdding || isLoading}
+          onClick={() => setAddModal(true)}
+        >
+          Create Poll
+        </Button>
       </div>
     </>
   );

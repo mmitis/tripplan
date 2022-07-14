@@ -75,7 +75,7 @@ const placeAdd = async (
         });
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(404).json({
       error: "Provider does not exist",
     });

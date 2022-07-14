@@ -180,6 +180,8 @@ model TripPoll {
   dateEnd     DateTime
   type        TripPollType
   description String
+  visibility  Boolean?     @default(true)
+  deleted     Boolean?     @default(false)
 
   trip   Trip             @relation(fields: [tripId], references: [id])
   answer TripPollAnswer[]
@@ -189,7 +191,8 @@ model TripPollAnswer {
   id         String @id @default(uuid())
   tripPollId String
 
-  name String
+  name        String
+  description String?
 
   poll TripPoll   @relation(fields: [tripPollId], references: [id])
   vote TripVote[]
