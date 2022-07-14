@@ -4,7 +4,7 @@ type EstimationsProps = {
   trip: Awaited<TripOverall>;
 };
 export const Estimations = ({ trip }: EstimationsProps) => {
-  const acommodationCosts = (trip?.accomodation || []).map(
+  const acommodationCosts = (trip?.accommodation || []).map(
     (acco) => acco.price
   );
   const transportCosts = (trip?.transport || []).map((trans) => trans.price);

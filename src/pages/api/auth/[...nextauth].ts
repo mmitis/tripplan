@@ -7,17 +7,6 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const nextAuthOptions = {
-  logger: {
-    error(code: string, metadata: string) {
-      console.error(code, metadata);
-    },
-    warn(code: string) {
-      console.warn(code);
-    },
-    debug(code: string, metadata: string) {
-      console.debug(code, metadata);
-    },
-  },
   adapter: PrismaAdapter(prisma),
   providers: [
     FacebookProvider({

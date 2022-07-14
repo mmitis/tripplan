@@ -1,6 +1,6 @@
 import { TripUser, TripUserType, User } from "@prisma/client";
 type UserListProps = {
-  users?: (TripUser & { user: User })[];
+  users?: (TripUser & { user: User | null })[];
 };
 
 export const UserList = ({ users = [] }: UserListProps) => {
@@ -11,9 +11,10 @@ export const UserList = ({ users = [] }: UserListProps) => {
           <>
             {person.userType == TripUserType.COMMON && (
               <>
+                {/* eslint-disable-next-line @next/next/no-img-element*/}
                 <img
                   className="h-10 w-10 rounded-full"
-                  src={person?.user?.image}
+                  src={person?.user?.image || ""}
                   alt=""
                 />
                 <div className="ml-3 flex flex-col">

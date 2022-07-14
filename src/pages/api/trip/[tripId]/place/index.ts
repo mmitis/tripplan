@@ -10,7 +10,7 @@ import { getSessionAPIProps } from "utils/access";
 const DEFAULT_LOCALE = "EN";
 
 type PlaceData = {
-  place: TripAccomodation;
+  place: TripAccommodation;
 };
 
 type PlacePayloadAdd = {
