@@ -3,7 +3,7 @@ import { Menu, Popover, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 
 import type { GetServerSidePropsContext, NextPage } from "next";
-import { getTrip, TripOverall } from "../../services/prisma";
+import { getTrip, TripOverall } from "../../backend/services/prisma";
 import { getSessionProps } from "../../utils/access";
 import { Restricted } from "../../components/Restricted";
 import { UserList } from "../../components/UserList";

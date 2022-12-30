@@ -1,4 +1,4 @@
-import { getTripUsers } from "./../services/prisma";
+import { getTripUsers } from "../backend/services/prisma";
 import { GetServerSidePropsContext } from "next";
 import { unstable_getServerSession } from "next-auth";
 

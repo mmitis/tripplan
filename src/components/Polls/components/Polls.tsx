@@ -8,7 +8,7 @@ import { ContainerTitle } from "components/ContainerTitle";
 import { usePolls } from "../hooks/usePolls";
 import { ListItem } from "components/ListItem";
 import { StockImages } from "constants/mockImages";
-import { TripPollOverall } from "services/prisma";
+import { TripPollOverall } from "backend/services/prisma";
 
 type PollsProps = {
   polls: TripPollOverall[];

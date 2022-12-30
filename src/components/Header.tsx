@@ -1,4 +1,4 @@
-import { TripOverall } from "services/prisma";
+import { TripOverall } from "backend/services/prisma";
 
 type HeaderProps = {
   trip: TripOverall;

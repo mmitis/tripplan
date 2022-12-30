@@ -1,4 +1,4 @@
-import { PollCreateValues } from "./../components/Polls/components/PollsCreateModal";
+import { PollCreateValues } from "../../components/Polls/components/PollsCreateModal";
 import {
   PrismaClient,
   TripAccommodationProvider,

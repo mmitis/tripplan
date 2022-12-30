@@ -12,9 +12,9 @@ import {
   createTripAccomodation,
   getTripAccomodations,
   getTripPolls,
-} from "services/prisma";
+} from "backend/services/prisma";
 import { ErrorResponse } from "types";
-import { parseBookingSite } from "parsers/bookings";
+import { parseBookingSite } from "backend/parsers/bookings";
 import { getSessionAPIProps } from "utils/access";
 
 type PollData = {

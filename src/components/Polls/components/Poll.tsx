@@ -2,7 +2,7 @@ import { RadioGroup } from "@headlessui/react";
 import { Container } from "components/Container";
 import { ContainerTitle } from "components/ContainerTitle";
 import { useState } from "react";
-import { TripPollOverall } from "services/prisma";
+import { TripPollOverall } from "backend/services/prisma";
 import { classNames } from "utils/styles";
 import { formatDistance } from "date-fns";
 import { TripPollType } from "@prisma/client";

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { getTrip, TripOverall } from "services/prisma";
+import { getTrip, TripOverall } from "backend/services/prisma";
 import { ErrorResponse } from "types";
 import { getSessionAPIProps } from "utils/access";
 

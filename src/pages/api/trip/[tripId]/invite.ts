@@ -4,12 +4,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import { prisma, TripUser, User } from "@prisma/client";
 import { ErrorResponse } from "../../../../types";
-import { parseBookingSite } from "../../../../parsers/bookings";
+import { parseBookingSite } from "../../../../backend/parsers/bookings";
 import { validateEmail } from "../../../../utils/email";
 import {
   createTripInvitation,
   getTripUsers,
-} from "../../../../services/prisma";
+} from "../../../../backend/services/prisma";
 
 type UserData = {
   user: TripUser;

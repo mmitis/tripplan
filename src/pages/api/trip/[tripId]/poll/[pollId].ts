@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { removeTripPoll, removeTripTransport } from "services/prisma";
+import { removeTripPoll, removeTripTransport } from "backend/services/prisma";
 import { ErrorResponse } from "types";
 import { getSessionAPIProps } from "utils/access";
 

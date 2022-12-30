@@ -1,8 +1,8 @@
-import { getFlightDetails } from "./../../../../../fetchers/flights";
+import { getFlightDetails } from "../../../../../backend/fetchers/flights";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { TripTransport, TripTransportType } from "@prisma/client";
 
-import { createTripTransport, getTripTransports } from "services/prisma";
+import { createTripTransport, getTripTransports } from "backend/services/prisma";
 import { ErrorResponse } from "types";
 import { getSessionAPIProps } from "utils/access";
 import { TransportPayload } from "components/Transport/types/transport";

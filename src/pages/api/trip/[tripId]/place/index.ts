@@ -2,9 +2,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import { TripAccommodation, TripAccommodationProvider } from "@prisma/client";
 
-import { createTripAccomodation, getTripAccomodations } from "services/prisma";
+import { createTripAccomodation, getTripAccomodations } from "backend/services/prisma";
 import { ErrorResponse } from "types";
-import { parseBookingSite } from "parsers/bookings";
+import { parseBookingSite } from "backend/parsers/bookings";
 import { getSessionAPIProps } from "utils/access";
 
 const DEFAULT_LOCALE = "EN";

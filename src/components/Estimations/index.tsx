@@ -1,4 +1,4 @@
-import { TripOverall } from "services/prisma";
+import { TripOverall } from "backend/services/prisma";
 
 type EstimationsProps = {
   trip: Awaited<TripOverall>;

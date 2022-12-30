@@ -3,7 +3,7 @@ import axios from "axios";
 import { QueryKey } from "constants/queryKeys";
 import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { TripPollOverall } from "services/prisma";
+import { TripPollOverall } from "backend/services/prisma";
 import { PollCreateValues } from "../components/PollsCreateModal";
 
 export const usePolls = (tripId: string, ssrPolls: TripPollOverall[]) => {
