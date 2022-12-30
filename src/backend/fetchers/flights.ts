@@ -5,7 +5,7 @@ import {
 } from "@prisma/client";
 import axios from "axios";
 import { TransportPayload } from "components/Transport/types/transport";
-import { ryanairFlightDetails } from "graphql/ryanair";
+import { ryanairFlightDetails } from "backend/graphql/ryanair";
 
 const RYANAIR_API = "https://www.ryanair.com/api/bookingfa/pl-pl/graphql";
 
